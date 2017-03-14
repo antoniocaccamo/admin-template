@@ -26,7 +26,7 @@ import static com.github.adminfaces.template.util.Assert.has;
  * This filter controls when user must be redirected to logon or index page
  * and saves current url to redirect back when session expires
  */
-@WebFilter(urlPatterns = {"/*"})
+@WebFilter(urlPatterns = {"/*.xhtml", "/*.jsf"})
 public class AdminFilter implements Filter {
 
     private static final String FACES_RESOURCES = "javax.faces.resource";
@@ -78,14 +78,17 @@ public class AdminFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
-        if (disableFilter) {
-            return;
-        }
+        
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
-
+        
+        if (disableFilter) {
+            log.debug("disabledFilter : " + disableFilter);
+            chain.doFilter(req, resp);
+        }
+        
 
         if (request.getRequestURI().equals(request.getContextPath() + "/")) {
             response.sendRedirect(request.getContextPath() + "/" + indexPage);
